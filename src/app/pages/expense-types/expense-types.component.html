@@ -1,0 +1,89 @@
+<div class="container mt-4">
+  <div class="row">
+    <!-- Crear Nuevo Tipo de Gasto -->
+    <div class="col-md-12 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Crear Nuevo Tipo de Gasto</h5>
+          <form (ngSubmit)="onCreateExpenseType()">
+            <div class="mb-2">
+              <input type="text" class="form-control" placeholder="Nombre del Gasto" [(ngModel)]="newExpenseName" name="newExpenseName" required>
+            </div>
+            <div class="mb-2">
+              <input type="text" class="form-control" placeholder="Categoría del Gasto" [(ngModel)]="newExpenseCategory" name="newExpenseCategory" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Crear</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Tipos de Gastos -->
+    <div class="mt-3">
+      <h5 class="d-flex justify-content-between align-items-center">
+        <span>Tipos de Gastos</span>
+        <div>
+          <button class="btn btn-danger btn-sm me-2" (click)="deleteSelectedExpenses()" [disabled]="!hasSelectedExpenses()">
+            <i class="bi bi-trash"></i> Eliminar seleccionados
+          </button>
+          <button class="btn btn-secondary btn-sm" (click)="refreshExpenseTypes()">
+            <i class="bi bi-arrow-clockwise"></i> Refrescar
+          </button>
+        </div>
+      </h5>
+
+      <!-- Campo de búsqueda -->
+      <div class="mb-3">
+        <input type="text" class="form-control" placeholder="Buscar por nombre o categoría..." [(ngModel)]="searchExpenseName" (input)="filterExpenseTypes()">
+      </div>
+
+      <!-- Tabla de Tipos de Gastos -->
+      <table class="table table-bordered table-striped mt-2">
+        <thead class="table-dark">
+          <tr>
+            <th>
+              <input type="checkbox" (change)="toggleSelectAll($event)">
+            </th>
+            <th>Nombre del Gasto</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="filteredExpenseTypes.length > 0">
+          <tr *ngFor="let expense of filteredExpenseTypes">
+            <td>
+              <input type="checkbox" [(ngModel)]="expense.selected">
+            </td>
+            <td>
+              <div *ngIf="!expense.editing">{{ expense.name }}</div>
+              <input *ngIf="expense.editing" type="text" class="form-control" [(ngModel)]="expense.name" name="expenseNameEdit" required>
+            </td>
+            <td>
+              <div *ngIf="!expense.editing">{{ expense.category }}</div>
+              <input *ngIf="expense.editing" type="text" class="form-control" [(ngModel)]="expense.category" name="expenseCategoryEdit" required>
+            </td>
+            <td class="text-center">
+              <button *ngIf="!expense.editing" class="btn btn-info btn-sm me-1" (click)="enableEditExpenseType(expense)">
+                <i class="bi bi-pencil"></i> Editar
+              </button>
+              <button *ngIf="expense.editing" class="btn btn-success btn-sm me-1" (click)="onUpdateExpenseType(expense)">
+                <i class="bi bi-check"></i> Guardar
+              </button>
+              <button *ngIf="expense.editing" class="btn btn-secondary btn-sm me-1" (click)="cancelEditExpenseType(expense)">
+                <i class="bi bi-x"></i> Cancelar
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="onDeleteExpenseType(expense.id)">
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Mensaje sin resultados -->
+      <div *ngIf="filteredExpenseTypes.length === 0" class="alert alert-warning mt-3">
+        No se encontraron tipos de gastos.
+      </div>
+    </div>
+  </div>
+</div>

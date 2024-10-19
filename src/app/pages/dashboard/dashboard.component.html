@@ -1,0 +1,97 @@
+<div class="container mt-5">
+  <!-- Spinner de carga -->
+  <div class="overlay" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Procesando, por favor espera...</p>
+  </div>  
+
+  <h2 class="mb-4">¡Bienvenido al Dashboard del Administrador!</h2>
+
+  <div class="alert alert-info" role="alert">
+    Gestiona tus tareas de forma eficaz desde el panel de control.
+  </div>
+  
+  <!-- Nav Tabs -->
+  <ul class="nav nav-tabs" id="adminTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="rates-tab" data-bs-toggle="tab" data-bs-target="#rates" type="button" role="tab" aria-controls="rates" aria-selected="true">
+        Tasas Bancarias
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab" aria-controls="expenses" aria-selected="false">
+        Tipos de Gastos
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="rates-types-tab" data-bs-toggle="tab" data-bs-target="#rates-types" type="button" role="tab" aria-controls="rates-types" aria-selected="false">
+        Tipos de Tasas
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab" aria-controls="notifications" aria-selected="false">
+        Suscriptores de Notificaciones
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content mt-4" id="adminTabContent">
+    <!-- Bank Rates Tab -->
+    <div class="tab-pane fade show active" id="rates" role="tabpanel" aria-labelledby="rates-tab">
+      <app-bank-rates
+        [isLoading]="isLoading"
+        (loadingChange)="setLoading($event)"
+        (showModal)="showModal($event.title, $event.message, $event.type, $event.action)">
+      </app-bank-rates>
+    </div>    
+
+    <!-- Expense Types Tab -->
+    <div class="tab-pane fade" id="expenses" role="tabpanel" aria-labelledby="expenses-tab">
+      <app-expense-types
+        [isLoading]="isLoading"
+        (loadingChange)="setLoading($event)"
+        (showModal)="showModal($event.title, $event.message, $event.type, $event.action)">
+      </app-expense-types>
+    </div>
+
+    <!-- Rate Types Tab -->
+    <div class="tab-pane fade" id="rates-types" role="tabpanel" aria-labelledby="rates-types-tab">
+      <app-rate-types
+        [isLoading]="isLoading"
+        (loadingChange)="setLoading($event)"
+        (showModal)="showModal($event.title, $event.message, $event.type, $event.action)">
+      </app-rate-types>
+    </div>
+
+    <!-- Notification Subscribers Tab -->
+    <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+      <app-notification-subscribers
+        [isLoading]="isLoading"
+        (loadingChange)="setLoading($event)"
+        (showModal)="showModal($event.title, $event.message, $event.type, $event.action)">
+      </app-notification-subscribers>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Bootstrap para mensajes -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" [ngClass]="{'bg-success': modalType === 'success', 'bg-danger': modalType === 'error', 'bg-warning': modalType === 'confirm'}">
+        <h5 class="modal-title" id="infoModalLabel">{{ modalTitle }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{ modalMessage }}
+      </div>
+      <div class="modal-footer">
+        <button *ngIf="modalType === 'confirm'" type="button" class="btn btn-danger" (click)="confirmModalAction()">Confirmar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<div class="container mt-4">
+    <div class="row">
+      <!-- Crear Nuevo Tipo de Tasa -->
+      <div class="col-md-12 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Crear Nuevo Tipo de Tasa</h5>
+            <form (ngSubmit)="onCreateRateType()">
+              <div class="mb-2">
+                <input type="text" class="form-control" placeholder="Nuevo Nombre de Tasa" [(ngModel)]="newRateTypeName" name="newRateTypeName" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Crear Nuevo Tipo de Tasa</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Lista de Tipos de Tasas -->
+      <div *ngIf="rateTypes.length > 0" class="mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Tipos de Tasas Editables:</h6>
+          <button class="btn btn-secondary" (click)="refreshRateTypes()">
+            <i class="bi bi-arrow-clockwise"></i> Refrescar Tipos de Tasas
+          </button>
+        </div>
+  
+        <ul class="list-group">
+          <li *ngFor="let rateType of rateTypes" class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center" style="flex: 1;">
+              <input *ngIf="rateType.editing"
+                    type="text"
+                    class="form-control me-2"
+                    [(ngModel)]="rateType.name"
+                    name="rateTypeName{{rateType.id}}"
+                    required>
+              <span *ngIf="!rateType.editing">
+                <strong>{{ rateType.name }}</strong>
+              </span>
+            </div>
+  
+            <div class="d-flex">
+              <!-- Habilitar Edición -->
+              <button *ngIf="!rateType.editing"
+                      class="btn btn-info btn-sm me-1"
+                      (click)="enableEditRateType(rateType)">
+                <i class="bi bi-pencil"></i> Editar
+              </button>
+  
+              <!-- Confirmar Actualización -->
+              <button *ngIf="rateType.editing"
+                      class="btn btn-success btn-sm me-1"
+                      (click)="onUpdateRateType(rateType)">
+                <i class="bi bi-check"></i> Guardar
+              </button>
+  
+              <!-- Cancelar Edición -->
+              <button *ngIf="rateType.editing"
+                      class="btn btn-secondary btn-sm me-1"
+                      (click)="cancelEditRateType(rateType)">
+                <i class="bi bi-x"></i> Cancelar
+              </button>
+  
+              <!-- Eliminar Tipo de Tasa -->
+              <button class="btn btn-danger btn-sm"
+                      (click)="onDeleteRateType(rateType.id)">
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </div>
+          </li>
+        </ul>
+  
+        <!-- Mensaje sin resultados -->
+        <div *ngIf="rateTypes.length === 0" class="alert alert-warning mt-3">
+          No se encontraron tipos de tasas.
+        </div>
+      </div>
+    </div>
+  </div>
+  

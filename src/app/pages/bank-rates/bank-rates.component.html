@@ -1,0 +1,183 @@
+<div class="container mt-4">
+    <div class="row">
+      <!-- Botón para iniciar el scraping -->
+      <div class="col-md-12 mb-4">
+        <button class="btn btn-primary w-100" (click)="startScraping()">
+          <i class="bi bi-arrow-clockwise"></i> Iniciar Scraping
+        </button>
+      </div>
+  
+      <!-- Formulario para crear tasas de interés bancarias -->
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Crear Tasa de Interés Bancaria</h5>
+            <form (ngSubmit)="onCreateBankInterestRate()">
+              <div class="mb-2">
+                <input type="text" class="form-control" placeholder="Nombre del Banco" [(ngModel)]="bankName" name="bankName" required>
+              </div>
+              <div class="mb-2">
+                <input type="number" class="form-control" placeholder="Tasa de Interés" [(ngModel)]="interesRate" name="interestRate" step="0.01" required>
+              </div>
+              <div class="mb-2">
+                <input type="number" class="form-control" placeholder="Tasa Máxima de Interés" [(ngModel)]="maxInteresRate" name="maxInterestRate" step="0.01" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Crear</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Lista de tasas de interés bancarias -->
+      <div class="mt-3">
+        <h5 class="d-flex justify-content-between align-items-center">
+          <span>Tasas de Interés Bancarias</span>
+          <div>
+            <button class="btn btn-danger btn-sm me-2" 
+                    (click)="deleteSelectedRates()" 
+                    [disabled]="!hasSelectedRates()">
+              <i class="bi bi-trash"></i> Eliminar Seleccionados
+            </button>
+            <button class="btn btn-secondary btn-sm" (click)="refreshBankInterestRates()">
+              <i class="bi bi-arrow-clockwise"></i> Refrescar
+            </button>
+          </div>
+        </h5>  
+  
+        <!-- Campo de búsqueda -->
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="Buscar por nombre del banco..." [(ngModel)]="searchBankName" (input)="filterBankInterestRates()">
+        </div>
+  
+        <!-- Tabla de tasas de interés bancarias -->
+        <table class="table table-bordered table-striped mt-2">
+          <thead class="table-dark">
+            <tr>
+              <th>
+                <input type="checkbox" (change)="toggleSelectAll($event)">
+              </th>
+              <th>Nombre del Banco</th>
+              <th>Tasa de Interés</th>
+              <th>Tasa Máxima de Interés</th>
+              <th>Fecha Efectiva</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="filteredBankInterestRates.length > 0">
+            <tr *ngFor="let rate of filteredBankInterestRates">
+              <td>
+                <input type="checkbox" [(ngModel)]="rate.selected">
+              </td>
+              <td>
+                <div *ngIf="!rate.editing">{{ rate.bankName }}</div>
+                <input *ngIf="rate.editing" type="text" class="form-control" [(ngModel)]="rate.bankName" name="bankNameEdit" required>
+              </td>
+              <td>
+                <div *ngIf="!rate.editing">{{ rate.interestRate }}%</div>
+                <input *ngIf="rate.editing" type="number" class="form-control" [(ngModel)]="rate.interestRate" name="interestRateEdit" step="0.01" required>
+              </td>
+              <td>
+                <div *ngIf="!rate.editing">{{ rate.maxInterestRate }}%</div>
+                <input *ngIf="rate.editing" type="number" class="form-control" [(ngModel)]="rate.maxInterestRate" name="maxInterestRateEdit" step="0.01" required>
+              </td>
+              <td>{{ rate.effectiveDate | date: 'short' }}</td>
+              <td class="text-center">
+                <button *ngIf="!rate.editing" class="btn btn-info btn-sm me-1" (click)="rate.editing = true">
+                  <i class="bi bi-pencil"></i> Editar
+                </button>
+                <button *ngIf="rate.editing" class="btn btn-success btn-sm me-1" (click)="onUpdateBankInterestRate(rate)">
+                  <i class="bi bi-check"></i> Guardar
+                </button>
+                <button *ngIf="rate.editing" class="btn btn-secondary btn-sm me-1" (click)="cancelEditBankInterestRate(rate)">
+                  <i class="bi bi-x"></i> Cancelar
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="onDeleteBankInterestRate(rate.id)">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+  
+        <!-- Mensaje sin resultados -->
+        <div *ngIf="filteredBankInterestRates.length === 0" class="alert alert-warning mt-3">
+          No se encontraron tasas de interés bancarias.
+        </div>
+      </div>
+  
+      <!-- Formulario y tabla para crear tasas de interés en lote -->
+      <div class="col-md-12 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Crear Tasas de Interés Bancarias en Lote</h5>
+
+            <!-- Campo para cargar CSV -->
+            <div class="mb-3">
+              <!-- Botón personalizado para cargar archivo -->
+              <label class="btn btn-primary w-100">
+                Seleccionar Archivo
+                <input type="file" accept=".csv" (change)="onFileChange($event)" #fileInput hidden>
+              </label>
+              <div *ngIf="selectedFileName" class="mt-2 text-secondary">
+                Archivo seleccionado: {{ selectedFileName }}
+              </div>
+            </div>            
+
+            <!-- Formulario para añadir nueva tasa -->
+            <form (ngSubmit)="addRate()" class="mb-4">
+              <div class="row">
+                <div class="col-md-4 mb-2">
+                  <input type="text" class="form-control" placeholder="Nombre del Banco" [(ngModel)]="newRate.bankName" name="newBankName" required>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <input type="number" class="form-control" placeholder="Tasa de Interés" [(ngModel)]="newRate.interesRate" name="newInterestRate" step="0.01" required>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <input type="number" class="form-control" placeholder="Tasa Máxima de Interés" [(ngModel)]="newRate.maxInteresRate" name="newMaxInterestRate" step="0.01" required>
+                </div>
+                <div class="col-md-2 mb-2">
+                  <button type="submit" class="btn btn-primary w-100">Añadir</button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Tabla de tasas en lote -->
+            <table class="table table-bordered table-striped mt-2" *ngIf="batchBankRates.length > 0">
+              <thead class="table-dark">
+                <tr>
+                  <th>Nombre del Banco</th>
+                  <th>Tasa de Interés</th>
+                  <th>Tasa Máxima de Interés</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let rate of batchBankRates; let i = index">
+                  <td>
+                    <input type="text" class="form-control" [(ngModel)]="rate.bankName" name="bankName{{i}}" required>
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" [(ngModel)]="rate.interesRate" name="interestRate{{i}}" step="0.01" required>
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" [(ngModel)]="rate.maxInteresRate" name="maxInterestRate{{i}}" step="0.01" required>
+                  </td>
+                  <td class="text-center">
+                    <button class="btn btn-danger btn-sm" (click)="removeRate(i)">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Botón para enviar lote -->
+            <button *ngIf="batchBankRates.length > 0" class="btn btn-success w-100 mt-2" (click)="onSubmitBatch()">
+              Enviar Lote
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

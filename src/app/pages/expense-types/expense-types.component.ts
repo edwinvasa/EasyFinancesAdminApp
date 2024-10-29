@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-expense-types',
@@ -95,21 +96,29 @@ export class ExpenseTypesComponent implements OnInit {
     });
   }
 
-  // Ejecutar la eliminación de tipo de gasto
   private executeDeleteExpenseType(id: number) {
     this.loadingChange.emit(true);
-    this.adminService.deleteExpenseType(id).subscribe({
-      next: () => {
-        this.getExpenseTypes();
-        this.showModal.emit({ title: 'Éxito', message: 'El tipo de gasto se eliminó correctamente.', type: 'success' });
-        this.loadingChange.emit(false);
-      },
-      error: (err) => {
-        console.error('Error al eliminar el tipo de gasto:', err);
-        this.showModal.emit({ title: 'Error', message: 'No se pudo eliminar el tipo de gasto.', type: 'error' });
-        this.loadingChange.emit(false);
-      }
-    });
+  
+    this.adminService.deleteExpenseType(id)
+      .pipe(
+        catchError(err => {
+          console.error('Error al eliminar el tipo de gasto:', err);
+          this.showModal.emit({ title: 'Error', message: 'No se pudo eliminar el tipo de gasto.', type: 'error' });
+          this.loadingChange.emit(false);
+          return of(null);  // Completa el flujo devolviendo un observable nulo
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.getExpenseTypes();
+          this.showModal.emit({ title: 'Éxito', message: 'El tipo de gasto se eliminó correctamente.', type: 'success' });
+          this.loadingChange.emit(false);
+        },
+        error: (err) => {
+          console.error('Error inesperado:', err);  // Manejo de errores no anticipados
+          this.loadingChange.emit(false);
+        }
+      });
   }
 
   // Habilitar la edición del tipo de gasto

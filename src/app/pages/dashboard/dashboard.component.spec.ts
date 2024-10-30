@@ -3,7 +3,7 @@ import { DashboardComponent } from './dashboard.component';
 import { ElementRef, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Modal } from 'bootstrap';
 
-fdescribe('DashboardComponent', () => {
+describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let elementRef: ElementRef;

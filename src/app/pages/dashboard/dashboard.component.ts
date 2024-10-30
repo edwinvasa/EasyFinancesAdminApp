@@ -15,14 +15,13 @@ export class DashboardComponent implements AfterViewInit {
   modalAction: Function | null = null;
   
   constructor(
-    private elementRef: ElementRef,
-    private cdr: ChangeDetectorRef
+    private readonly elementRef: ElementRef,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngAfterViewInit() {
     const tabContainer = this.elementRef.nativeElement.querySelector('#adminTab');
     tabContainer?.addEventListener('shown.bs.tab', (event: any) => {
-      const activeTab = event.target.getAttribute('aria-controls');
     });
 
     // Detectar cambios después de la vista inicial

@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-fdescribe('ExpenseTypesComponent', () => {
+describe('ExpenseTypesComponent', () => {
   let component: ExpenseTypesComponent;
   let fixture: ComponentFixture<ExpenseTypesComponent>;
   let adminService: AdminService;
@@ -114,29 +114,18 @@ fdescribe('ExpenseTypesComponent', () => {
   });
 
   it('should delete an expense type', () => {
-    // Espiar el método deleteExpenseType del servicio
     const deleteSpy = spyOn(adminService, 'deleteExpenseType').and.returnValue(of(null));
     let emittedValue: any;
   
-    // Espiar la emisión del modal
     spyOn(component.showModal, 'emit').and.callFake((value) => emittedValue = value);
-  
-    // Espiar getExpenseTypes para que no sea la llamada real
     spyOn(component, 'getExpenseTypes');
   
-    // Llama al método público para iniciar la eliminación
     component.onDeleteExpenseType(1);
   
-    // Obtiene la acción emitida por el modal
     const modalAction = emittedValue.action;
-  
-    // Ejecuta la acción del modal para simular la confirmación
     modalAction();
   
-    // Verifica que se haya llamado al espía de deleteExpenseType
     expect(deleteSpy).toHaveBeenCalledWith(1);
-  
-    // Verifica que se haya llamado a getExpenseTypes
     expect(component.getExpenseTypes).toHaveBeenCalled();
   });  
   
@@ -148,14 +137,11 @@ fdescribe('ExpenseTypesComponent', () => {
       emittedValue = value;
     });
   
-    // Llamar al método público para iniciar la eliminación
     component.onDeleteExpenseType(1);
   
-    // Obtener la acción del modal desde el valor emitido
     expect(emittedValue).toBeDefined();
     const modalAction = emittedValue.action;
   
-    // Ejecutar la acción del modal para simular la confirmación
     modalAction();
   
     expect(component.showModal.emit).toHaveBeenCalledWith({
@@ -188,4 +174,80 @@ fdescribe('ExpenseTypesComponent', () => {
 
     expect(component.filteredExpenseTypes.every(expense => expense.selected)).toBeTrue();
   });
+
+  // Prueba para cancelar la edición de un tipo de gasto
+  it('should cancel editing an expense type', () => {
+    const expense = { id: 1, name: 'Comida', category: 'Variable', editing: true };
+    component.expenseTypes = [expense];
+
+    component.cancelEditExpenseType(expense);
+
+    expect(expense.editing).toBeFalse();
+  });
+
+  it('should delete selected expenses', () => {
+    component.filteredExpenseTypes = [
+      { id: 1, name: 'Comida', category: 'Variable', selected: true },
+      { id: 2, name: 'Alquiler', category: 'Fijo', selected: false }
+    ];
+  
+    spyOn(adminService, 'deleteExpenseType').and.returnValue(of(null));
+    spyOn(component.showModal, 'emit').and.callFake((modalData) => {
+      if (modalData && modalData.type === 'confirm' && modalData.action) {
+        modalData.action(); // Simula la confirmación
+      }
+    });
+  
+    component.deleteSelectedExpenses();
+  
+    expect(adminService.deleteExpenseType).toHaveBeenCalledWith(1);
+    expect(component.showModal.emit).toHaveBeenCalledWith({
+      title: 'Éxito',
+      message: 'Los tipos de gastos seleccionados se eliminaron correctamente.',
+      type: 'success'
+    });
+  });
+
+  it('should handle batch deletion through deleteSelectedExpenses', () => {
+    component.filteredExpenseTypes = [
+      { id: 1, name: 'Comida', category: 'Variable', selected: true },
+      { id: 2, name: 'Alquiler', category: 'Fijo', selected: true }
+    ];
+  
+    spyOn(adminService, 'deleteExpenseType').and.returnValue(of(null));
+    spyOn(component.showModal, 'emit').and.callFake((modalData) => {
+      if (modalData && modalData.type === 'confirm' && modalData.action) {
+        modalData.action(); // Simula la confirmación
+      }
+    });
+  
+    component.deleteSelectedExpenses();
+  
+    expect(adminService.deleteExpenseType).toHaveBeenCalledTimes(2);
+    expect(component.showModal.emit).toHaveBeenCalledWith({
+      title: 'Éxito',
+      message: 'Los tipos de gastos seleccionados se eliminaron correctamente.',
+      type: 'success'
+    });
+  });
+
+  // Prueba para verificar si hay tipos de gastos seleccionados
+  it('should return true if there are selected expenses', () => {
+    component.filteredExpenseTypes = [
+      { id: 1, selected: true },
+      { id: 2, selected: false }
+    ];
+
+    expect(component.hasSelectedExpenses()).toBeTrue();
+  });
+
+  it('should return false if there are no selected expenses', () => {
+    component.filteredExpenseTypes = [
+      { id: 1, selected: false },
+      { id: 2, selected: false }
+    ];
+
+    expect(component.hasSelectedExpenses()).toBeFalse();
+  });
+
 });

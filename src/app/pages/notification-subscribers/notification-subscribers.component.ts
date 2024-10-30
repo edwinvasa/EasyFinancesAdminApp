@@ -3,8 +3,7 @@ import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'app-notification-subscribers',
-  templateUrl: './notification-subscribers.component.html',
-  styleUrls: ['./notification-subscribers.component.css']
+  templateUrl: './notification-subscribers.component.html'
 })
 export class NotificationSubscribersComponent implements OnInit {
 
@@ -16,7 +15,7 @@ export class NotificationSubscribersComponent implements OnInit {
   searchSubscriberEmail: string = '';
   filteredNotificationSubscribers: any[] = [];
 
-  constructor(private adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) {}
 
   ngOnInit() {
     this.getNotificationSubscribers();

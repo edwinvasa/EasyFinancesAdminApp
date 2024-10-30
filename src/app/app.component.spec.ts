@@ -3,7 +3,7 @@ import { AppComponent } from './app.component';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-fdescribe('AppComponent', () => {
+describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: any;
   let router: Router;

@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
-fdescribe('NotificationSubscribersComponent', () => {
+describe('NotificationSubscribersComponent', () => {
   let component: NotificationSubscribersComponent;
   let fixture: ComponentFixture<NotificationSubscribersComponent>;
   let adminService: jasmine.SpyObj<AdminService>;

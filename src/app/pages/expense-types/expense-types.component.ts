@@ -4,8 +4,7 @@ import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-expense-types',
-  templateUrl: './expense-types.component.html',
-  styleUrls: ['./expense-types.component.css']
+  templateUrl: './expense-types.component.html'
 })
 export class ExpenseTypesComponent implements OnInit {
 
@@ -19,7 +18,7 @@ export class ExpenseTypesComponent implements OnInit {
   filteredExpenseTypes: any[] = [];
   searchExpenseName: string = '';
 
-  constructor(private adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) {}
 
   ngOnInit() {
     this.getExpenseTypes();

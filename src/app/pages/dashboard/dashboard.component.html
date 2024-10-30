@@ -1,9 +1,9 @@
 <div class="container mt-5">
   <!-- Spinner de carga -->
   <div class="overlay" *ngIf="isLoading">
-    <div class="spinner-border text-primary" role="status">
+    <output class="spinner-border text-primary" aria-live="polite">
       <span class="visually-hidden">Cargando...</span>
-    </div>
+    </output>
     <p class="mt-2">Procesando, por favor espera...</p>
   </div>  
 
@@ -14,28 +14,20 @@
   </div>
   
   <!-- Nav Tabs -->
-  <ul class="nav nav-tabs" id="adminTab" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="rates-tab" data-bs-toggle="tab" data-bs-target="#rates" type="button" role="tab" aria-controls="rates" aria-selected="true">
-        Tasas Bancarias
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab" aria-controls="expenses" aria-selected="false">
-        Tipos de Gastos
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="rates-types-tab" data-bs-toggle="tab" data-bs-target="#rates-types" type="button" role="tab" aria-controls="rates-types" aria-selected="false">
-        Tipos de Tasas
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab" aria-controls="notifications" aria-selected="false">
-        Suscriptores de Notificaciones
-      </button>
-    </li>
-  </ul>
+  <div class="nav nav-tabs" id="adminTab" role="tablist">
+    <button class="nav-link active" id="rates-tab" data-bs-toggle="tab" data-bs-target="#rates" type="button" role="tab" aria-controls="rates" aria-selected="true">
+      Tasas Bancarias
+    </button>
+    <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab" aria-controls="expenses" aria-selected="false">
+      Tipos de Gastos
+    </button>
+    <button class="nav-link" id="rates-types-tab" data-bs-toggle="tab" data-bs-target="#rates-types" type="button" role="tab" aria-controls="rates-types" aria-selected="false">
+      Tipos de Tasas
+    </button>
+    <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab" aria-controls="notifications" aria-selected="false">
+      Suscriptores de Notificaciones
+    </button>
+  </div>
 
   <!-- Tab Content -->
   <div class="tab-content mt-4" id="adminTabContent">

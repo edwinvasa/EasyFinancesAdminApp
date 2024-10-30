@@ -3,8 +3,7 @@ import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'app-bank-rates',
-  templateUrl: './bank-rates.component.html',
-  styleUrls: ['./bank-rates.component.css']
+  templateUrl: './bank-rates.component.html'
 })
 export class BankRatesComponent implements OnInit {
 
@@ -23,7 +22,7 @@ export class BankRatesComponent implements OnInit {
   newRate = { bankName: '', interesRate: 0, maxInteresRate: 0 };
   batchBankRates: any[] = [];
 
-  constructor(private adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) {}
 
   ngOnInit() {
     this.getBankInterestRates();

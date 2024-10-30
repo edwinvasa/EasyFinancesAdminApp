@@ -3,7 +3,7 @@ import { AdminService } from './admin.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpHeaders } from '@angular/common/http';
 
-fdescribe('AdminService', () => {
+describe('AdminService', () => {
   let service: AdminService;
   let httpMock: HttpTestingController;
   const baseUrl = 'https://easy-finances-admin-403ac1f06410.herokuapp.com';

@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
-fdescribe('RateTypesComponent', () => {
+describe('RateTypesComponent', () => {
   let component: RateTypesComponent;
   let fixture: ComponentFixture<RateTypesComponent>;
   let adminService: jasmine.SpyObj<AdminService>;

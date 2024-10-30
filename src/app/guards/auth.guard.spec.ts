@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AuthGuard } from './auth.guard';
 
-fdescribe('AuthGuard', () => {
+describe('AuthGuard', () => {
   let authGuard: AuthGuard;
   let router: jasmine.SpyObj<Router>;
 

@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule } from '@angular/forms';
 
-fdescribe('BankRatesComponent', () => {
+describe('BankRatesComponent', () => {
   let component: BankRatesComponent;
   let fixture: ComponentFixture<BankRatesComponent>;
   let adminService: AdminService;
@@ -117,5 +117,157 @@ fdescribe('BankRatesComponent', () => {
       expect(component.parseCSV).toHaveBeenCalled();
       done();
     }, 100);
+  });
+
+  it('should delete a bank interest rate', () => {
+    const mockRate = { id: '1', bankName: 'Bank1', interestRate: 3.5, maxInterestRate: 5.0 };
+    component.filteredBankInterestRates = [mockRate];
+  
+    spyOn(adminService, 'deleteBankInterestRate').and.returnValue(of(null));
+    spyOn(component.showModal, 'emit').and.callFake((modalData) => {
+      // Verificar que modalData esté definido
+      if (modalData && modalData.type === 'confirm' && modalData.action) {
+        modalData.action(); // Simular la ejecución de la acción de confirmación
+      }
+    });
+  
+    component.onDeleteBankInterestRate('1');
+  
+    expect(adminService.deleteBankInterestRate).toHaveBeenCalledWith('1');
+    expect(component.showModal.emit).toHaveBeenCalledWith({
+      title: 'Éxito',
+      message: 'La tasa de interés bancaria se eliminó correctamente.',
+      type: 'success'
+    });
+  });   
+
+  it('should edit a bank interest rate', () => {
+    const mockRate = { id: '1', bankName: 'Bank1', interestRate: 4.0, maxInterestRate: 5.0, editing: true };
+    component.bankInterestRates = [mockRate];
+  
+    spyOn(adminService, 'createOrUpdateBankInterestRate').and.returnValue(of(null));
+  
+    component.onUpdateBankInterestRate(mockRate);
+  
+    expect(mockRate.editing).toBe(false);
+    expect(adminService.createOrUpdateBankInterestRate).toHaveBeenCalledWith('Bank1', 4.0, 5.0);
+  });
+  
+
+  it('should handle error when editing a bank interest rate', () => {
+    const mockRate = { bankName: 'Bank1', interestRate: 4.0, maxInterestRate: 5.0, editing: true };
+    spyOn(adminService, 'createOrUpdateBankInterestRate').and.returnValue(throwError(() => new Error('Error')));
+    spyOn(component.showModal, 'emit');
+
+    component.onUpdateBankInterestRate(mockRate);
+
+    expect(component.showModal.emit).toHaveBeenCalledWith({
+      title: 'Error',
+      message: 'No se pudo actualizar la tasa de interés bancaria.',
+      type: 'error'
+    });
+  });
+
+  it('should delete selected rates and call the admin service', () => {
+    component.filteredBankInterestRates = [
+      { id: '1', selected: true },
+      { id: '2', selected: false }
+    ];
+  
+    spyOn(adminService, 'deleteBankInterestRate').and.returnValue(of(null));
+    spyOn(component.showModal, 'emit').and.callFake((modalData) => {
+      // Verificar que modalData esté definido
+      if (modalData && modalData.type === 'confirm' && modalData.action) {
+        modalData.action(); // Simular la ejecución de la acción de confirmación
+      }
+    });
+  
+    component.deleteSelectedRates();
+  
+    expect(adminService.deleteBankInterestRate).toHaveBeenCalledWith('1');
+    expect(component.showModal.emit).toHaveBeenCalledWith({
+      title: 'Éxito',
+      message: 'Las tasas seleccionadas se eliminaron correctamente.',
+      type: 'success'
+    });
+  });   
+
+  // Test para la confirmación de eliminación de tasas
+  it('should emit showModal event for confirm deletion', () => {
+    spyOn(component.showModal, 'emit');
+    const mockRate = { id: '1', bankName: 'Bank1', interestRate: 3.5, maxInterestRate: 5.0, editing: false };
+
+    component.onDeleteBankInterestRate(mockRate.id);
+
+    expect(component.showModal.emit).toHaveBeenCalledWith({
+      title: 'Confirmación',
+      message: '¿Está seguro de que desea eliminar esta tasa de interés bancaria?',
+      type: 'confirm',
+      action: jasmine.any(Function)
+    });
+  });
+
+  // Test para la selección de todos los elementos
+  it('should toggle select all rates', () => {
+    component.filteredBankInterestRates = [
+      { id: '1', selected: false },
+      { id: '2', selected: false }
+    ];
+    const event = { target: { checked: true } };
+
+    component.toggleSelectAll(event);
+
+    expect(component.filteredBankInterestRates.every(rate => rate.selected)).toBeTrue();
+  });
+
+  // Test para cancelar la edición de una tasa de interés bancaria
+  it('should cancel editing a bank interest rate', () => {
+    const mockRate = { bankName: 'Bank1', interestRate: 4.0, maxInterestRate: 5.0, editing: true };
+    component.bankInterestRates = [mockRate];
+
+    component.cancelEditBankInterestRate(mockRate);
+
+    expect(mockRate.editing).toBe(false);
+  });
+
+  // Test para verificación de tasas seleccionadas
+  it('should return true if there are selected rates', () => {
+    component.filteredBankInterestRates = [
+      { id: '1', selected: true },
+      { id: '2', selected: false }
+    ];
+
+    expect(component.hasSelectedRates()).toBeTrue();
+  });
+
+  it('should return false if there are no selected rates', () => {
+    component.filteredBankInterestRates = [
+      { id: '1', selected: false },
+      { id: '2', selected: false }
+    ];
+
+    expect(component.hasSelectedRates()).toBeFalse();
+  });
+
+  // Test para la carga de archivos
+  it('should parse CSV data correctly', () => {
+    const csvData = 'Nombre del Banco,Tasa de Interés,Tasa Máxima de Interés\nBank5,2.5,3.0';
+    component.parseCSV(csvData);
+
+    expect(component.batchBankRates.length).toBe(1);
+    expect(component.batchBankRates[0].bankName).toBe('Bank5');
+  });
+
+  it('should handle incorrect CSV format', () => {
+    const incorrectCSVData = 'Incorrect,Data,Format';
+    spyOn(component.showModal, 'emit');
+
+    component.parseCSV(incorrectCSVData);
+
+    expect(component.showModal.emit).toHaveBeenCalledWith({
+      title: 'Error',
+      message: 'El archivo CSV tiene un formato incorrecto.',
+      type: 'error'
+    });
   });
 });

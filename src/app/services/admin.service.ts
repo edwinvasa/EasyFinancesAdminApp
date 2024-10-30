@@ -7,9 +7,9 @@ import { Observable } from 'rxjs';
 })
 export class AdminService {
 
-  private baseUrl = 'https://easy-finances-admin-403ac1f06410.herokuapp.com';
+  private readonly baseUrl = 'https://easy-finances-admin-403ac1f06410.herokuapp.com';
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   updateBankRates(): Observable<any> {
     const headers = new HttpHeaders({

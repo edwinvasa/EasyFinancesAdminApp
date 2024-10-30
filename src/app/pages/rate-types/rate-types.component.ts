@@ -3,8 +3,7 @@ import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'app-rate-types',
-  templateUrl: './rate-types.component.html',
-  styleUrls: ['./rate-types.component.css']
+  templateUrl: './rate-types.component.html'
 })
 export class RateTypesComponent implements OnInit {
 
@@ -16,7 +15,7 @@ export class RateTypesComponent implements OnInit {
   rateTypes: any[] = [];
   originalRateTypes: any[] = [];
 
-  constructor(private adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) {}
 
   ngOnInit() {
     this.getRateTypes();

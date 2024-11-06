@@ -7,9 +7,11 @@
     "build": "ng build",
     "build:href": "ng build --base-href /EasyFinancesAdminApp/",
     "build:github": "npm run delete:docs && npm run build:href && npm run copy:dist:browser",
+    "build:github:win": "npm run delete:docs:win && npm run build:href && npm run copy:dist:browser",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "delete:docs": "rm -rf docs",
+    "delete:docs:win": "del docs",
     "copy:dist:browser": "copyfiles dist/admin-front/browser/* ./docs -f"
   },
   "private": true,
